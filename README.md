@@ -11,6 +11,7 @@
 - **Offline?** Python standart kutubxonasi bilan ishlaydi. Agar `vendor/` ichiga portable `nmap` / `aircrack-ng` qo‘ysangiz, to‘liq oflayn. Linuxda internet bo‘lsa, birinchi setup payti apt/yum orqali kerakli paketlarni o‘rnatishga urinadi.
 - **OS tanlash**: faqat birinchi setupda so‘raladi, `.os_choice` ga yoziladi. Keyin avtomatik shu OS bilan ochiladi; `os` komandasida yoki `toolkit --setup` bilan o‘zgartiriladi.
 - **Ishga tushirish**: `./toolkit` (Linux/macOS) yoki `toolkit.bat` (Windows). PATH ga qo‘shsangiz, shunchaki `toolkit`.
+- **Admin/Root**: 🔴 asbob tanlansa va huquq yetarli bo‘lmasa, dastur ruxsat so‘raydi; rozilik bersangiz sudo/runas bilan qayta ishga tushadi.
 
 ---
 
@@ -33,6 +34,46 @@
 
 🔴 — odatda Admin/Root talab qiladi.
 
+### Asboblar qo‘llanmasi (ID — ishlatish)
+- 1 Ping: host/IP kiriting → paket soni va intervalni tanlang → natijalar.  
+- 2 Port Scan: host/IP, start/end port (default 1–1024) → ochiq portlarni ko‘rsatadi.  
+- 3 Traceroute: manzil kiriting → hoplar ketma-ketligi.  
+- 4 DNS Lookup: domen kiriting → hostname, alias, IP lar.  
+- 5 WHOIS: domen/IP kiriting → birinchi 50 qator WHOIS ma’lumoti.  
+- 6 Net Interfaces: IP/adapterni ro‘yxati (ip/ifconfig yoki ipconfig).  
+- 7 Bandwidth: `speedtest`/`speedtest-cli` bo‘lsa tezlik testini ishga tushiradi.  
+- 8 ARP Scan 🔴: subnet kiriting → arp-scan yoki nmap -sn bilan LAN qurilmalar; root talab.  
+- 9 HTTP Check: URL kiriting → status, server, content-type, javob vaqti.  
+- 10 System Info: OS, versiya, CPU, Python, hostname, IP, admin holati.  
+- 11 Process List: ps/tasklist chiqishini CPU bo‘yicha ko‘rsatadi (birinchi ~45 qator).  
+- 12 Disk Usage: df -h yoki WMIC disklar.  
+- 13 RAM Usage: free -h yoki WMIC RAM.  
+- 14 CPU Monitor: psutil bo‘lsa 8 soniyali bar; aks holda top/WMIC.  
+- 15 Kill Process 🔴: nom yoki PID kiriting → tasdiqlash → pkill/taskkill.  
+- 16 Startup List: Windows startup (WMIC) yoki Linux init.d/systemd ro‘yxati.  
+- 17 Win Optimizer: effektlar/SysMain/indeks/trim/power plan sozlaydi (admin).  
+- 18 Clear Cache: Temp va Prefetch fayllarni tozalaydi (admin tavsiya).  
+- 19 Win Activate 🔴: KMS orqali Windows/Office aktivatsiyasi (admin).  
+- 20 Speed Up: registry tweaks, DNS flush, hibernation off (admin tavsiya).  
+- 21 Win Update: PowerShell orqali yangilanishlarni o‘rnatish (admin).  
+- 22 Firewall: netsh bilan yoqish/o‘chirish, portni block/allow, rules ro‘yxati.  
+- 23 UFW Firewall: status/enable/disable/allow/deny/delete (sudo).  
+- 24 Package Manager: apt/yum update/upgrade/install/remove/search/list (sudo).  
+- 25 Services: systemctl status/start/stop/restart/enable/disable (sudo).  
+- 26 Cron Jobs: crontab ko‘rish/qo‘shish/edit/nuklash.  
+- 27 Log Viewer: syslog, auth.log, dmesg, journalctl, kern.log tail.  
+- 28 Hash File: tanlangan faylning MD5/SHA1/SHA256 xeshi.  
+- 29 Password Generator: uzunlik va sonini tanlab, tasodifiy parollar yaratadi.  
+- 30 Vulnerability Scan 🔴: `nmap -sV --script=vuln` (root tavsiya); vaqt oladi.  
+- 31 Nmap Quick: `nmap -T4 -F` tez top-port skan.  
+- 32 Nmap Full 🔴: `nmap -sC -sV -O -p- -T4` to‘liq skan (admin tavsiya).  
+- 33 Nmap Ping: `nmap -sn <subnet>` ping sweep.  
+- 34 Nmap Top20: `nmap --top-ports 20 -sV -T4`.  
+- 35 Airmon 🔴: airmon-ng start/stop monitor rejimi (root).  
+- 36 Airodump 🔴: monitor interfeysda handshake yozish; BSSID/channel/outputni kiriting.  
+- 37 Aircrack 🔴: .cap/.pcap faylni wordlist bilan buzish.  
+- 38 Aireplay 🔴: deauth jo‘natib handshake olish; BSSID va ixtiyoriy client MAC.
+
 ---
 
 ## O‘rnatish
@@ -47,7 +88,7 @@
 ### 2) Klonlash
 ```bash
 git clone https://github.com/AxmatovB/Toolkit.git
-cd Toolkit   # odatda: ~/Toolkit yoki %USERPROFILE%\Toolkit
+cd Toolkit   # odatda: ~/Toolkit yoki %USERPROFILE%\\Toolkit
 chmod +x toolkit   # Linux/macOS
 ```
 
