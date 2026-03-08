@@ -7,7 +7,7 @@ Cross-platform: Windows & Linux
 """
 
 import os, sys, time, platform, subprocess, socket, shutil
-import threading, hashlib, secrets, string
+import threading, hashlib, secrets, string, re
 
 # ══════════════════════════════════════════════════════════════════
 #  COLORS
@@ -334,54 +334,44 @@ def visible_tools(cur_os):
 #  MENU — 3 COLUMNS
 # ══════════════════════════════════════════════════════════════════
 def print_menu(cur_os):
-    vt = visible_tools(cur_os)
-    col_order = (["NET","SYS","WIN","SEC"]
-                 if cur_os == "windows"
-                 else ["NET","SYS","LNX","SEC"])
-    groups = {}
-    for tid, d in vt.items():
-        if tid == "0": continue
-        groups.setdefault(d[1], []).append(tid)
+    vt = visible_tools(cur_os)  # which tools can actually run on this OS
+    all_ids = sorted([tid for tid in TOOLS.keys() if tid != "0"], key=lambda x: int(x))
 
-    W   = 57
-    SEP = f"  {C.DIM}│{C.RESET}  "
+    W   = 65
+    SEP = f"{C.DIM} │ {C.RESET}"
 
-    def render_block(cats):
-        while len(cats) < 3:
-            cats = cats + ["---"]
-        print(f"  {C.DIM}{'─'*W}  {'─'*W}  {'─'*W}{C.RESET}")
-        hdrs = []
-        for cat in cats:
-            cc, lbl = CAT_META.get(cat, (C.DIM, ""))
-            hdrs.append(f"{cc}{C.BOLD}  {lbl:^{W-2}}  {C.RESET}")
-        print(SEP.join(hdrs))
-        print(f"  {C.DIM}{'─'*W}  {'─'*W}  {'─'*W}{C.RESET}")
-        cols_data = [groups.get(c, []) for c in cats]
-        for i in range(max((len(c) for c in cols_data), default=0)):
-            parts = []
-            for col in cols_data:
-                if i < len(col):
-                    tid = col[i]
-                    _, cat, icon, desc, diff, _ = TOOLS[tid]
-                    dc = DC.get(diff, C.WHITE)
-                    parts.append(
-                        f"  {C.WHITE}[{C.CYAN}{tid:>2}{C.WHITE}]"
-                        f" {icon} {dc}{desc:<40}{C.RESET}"
-                    )
-                else:
-                    parts.append(" " * (W + 5))
-            print(SEP.join(parts))
+    ansi_re = re.compile(r'\x1b\[[0-9;]*m')
+    def pad_ansi(text, width):
+        """Pad text to width ignoring ANSI color codes."""
+        plain_len = len(ansi_re.sub('', text))
+        if plain_len < width:
+            text += " " * (width - plain_len)
+        return text
 
-    print()
-    render_block(col_order[:3])
-    print()
-    render_block(col_order[3:])
+    entries = []
+    for tid in all_ids:
+        name, cat, icon, desc, diff, os_only = TOOLS[tid]
+        available   = tid in vt
+        diff_color  = DC.get(diff, C.WHITE) if available else C.DIM
+        os_tag      = "" if os_only == "both" else f"{C.DIM}[{os_only.upper()} ONLY]{C.RESET}"
+        entry = (f"{C.WHITE}[{C.CYAN}{tid:>2}{C.WHITE}] "
+                 f"{icon} {diff_color}{desc:<44}{C.RESET} {os_tag}")
+        entries.append(pad_ansi(entry, W))
 
-    print(f"\n  {C.DIM}{'─'*185}{C.RESET}")
+    rows = (len(entries) + 2) // 3
+    bar_len = W * 3 + len(SEP) * 2
+
+    print(f"\n  {C.DIM}{'─'*bar_len}{C.RESET}")
+    for r in range(rows):
+        parts = []
+        for c in range(3):
+            idx = r * 3 + c
+            parts.append(entries[idx] if idx < len(entries) else " " * W)
+        print("  " + SEP.join(parts))
+    print(f"  {C.DIM}{'─'*bar_len}{C.RESET}")
     print(f"  {C.WHITE}[{C.RED} 0{C.WHITE}] ⬜ {C.DIM}Exit{C.RESET}"
-          f"          {C.DIM}│  type {C.CYAN}os{C.DIM} to switch OS{C.RESET}")
-    print(f"  {C.DIM}{'─'*185}{C.RESET}")
-    print(f"\n  {C.DIM}Difficulty:  "
+          f"  {C.DIM}| type {C.CYAN}os{C.DIM} to switch OS{C.RESET}")
+    print(f"  {C.DIM}Difficulty:  "
           f"{C.GREEN}● Easy   {C.YELLOW}● Medium   {C.RED}● Hard (Admin/Root){C.RESET}\n")
 
 # ══════════════════════════════════════════════════════════════════
