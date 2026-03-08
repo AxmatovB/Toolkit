@@ -334,8 +334,8 @@ def visible_tools(cur_os):
 #  MENU — 3 COLUMNS
 # ══════════════════════════════════════════════════════════════════
 def print_menu(cur_os):
-    vt = visible_tools(cur_os)  # which tools can actually run on this OS
-    all_ids = sorted([tid for tid in TOOLS.keys() if tid != "0"], key=lambda x: int(x))
+    vt = visible_tools(cur_os)  # only tools allowed for this OS
+    all_ids = sorted([tid for tid in vt.keys() if tid != "0"], key=lambda x: int(x))
 
     W   = 65
     SEP = f"{C.DIM} │ {C.RESET}"
@@ -351,9 +351,9 @@ def print_menu(cur_os):
     entries = []
     for tid in all_ids:
         name, cat, icon, desc, diff, os_only = TOOLS[tid]
-        available   = tid in vt
-        diff_color  = DC.get(diff, C.WHITE) if available else C.DIM
-        os_tag      = "" if os_only == "both" else f"{C.DIM}[{os_only.upper()} ONLY]{C.RESET}"
+        diff_color  = DC.get(diff, C.WHITE)
+        # Only highlight Linux-only items; hide Windows-only tag per request
+        os_tag      = f"{C.DIM}[LINUX ONLY]{C.RESET}" if os_only == "linux" else ""
         entry = (f"{C.WHITE}[{C.CYAN}{tid:>2}{C.WHITE}] "
                  f"{icon} {diff_color}{desc:<44}{C.RESET} {os_tag}")
         entries.append(pad_ansi(entry, W))
