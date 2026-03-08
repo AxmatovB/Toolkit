@@ -1,0 +1,40 @@
+# SYS-TOOLKIT v3.0 — Requirements
+# Created by Axmatov
+#
+# ─── PYTHON VERSION ────────────────────────────────────────────
+#
+#   Minimum  : Python 3.9
+#   REQUIRED : Python 3.11 or higher  ← recommended
+#   Tested   : Python 3.11, 3.12
+#
+#   Check:  python --version   or   python3 --version
+#   Get:    https://www.python.org/downloads/
+#
+# ─── REQUIRED PACKAGES ─────────────────────────────────────────
+#   None — toolkit runs on the Python standard library alone.
+#
+# ─── OPTIONAL PACKAGES (strongly recommended) ──────────────────
+#   Install:  pip install -r requirements.txt
+
+psutil>=5.9.0          # Live CPU & RAM monitoring  (tools 13, 14)
+speedtest-cli>=2.1.3   # Bandwidth speed test       (tool 7)
+
+# ─── OPTIONAL SYSTEM BINARIES ──────────────────────────────────
+#
+#   nmap
+#     Linux  :  sudo apt install nmap
+#     Windows:  choco install nmap  OR  https://nmap.org/download
+#     Used by:  Port Scan (2), Vuln Scan (30)
+#
+#   whois
+#     Linux  :  sudo apt install whois
+#     Windows:  choco install whois
+#     Used by:  WHOIS (5)
+#
+#   arp-scan  [Linux only]
+#     Linux  :  sudo apt install arp-scan
+#     Used by:  ARP Scan (8)
+#
+#   traceroute  [Linux only — Windows has tracert built-in]
+#     Linux  :  sudo apt install traceroute
+#     Used by:  Traceroute (3)
