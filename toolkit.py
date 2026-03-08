@@ -132,6 +132,35 @@ def run_setup(force=False):
     time.sleep(1)
 
 # ══════════════════════════════════════════════════════════════════
+#  ADMIN / ROOT ELEVATION
+# ══════════════════════════════════════════════════════════════════
+
+def ensure_admin():
+    """Ensure admin/root. If user agrees, relaunch elevated."""
+    if is_admin():
+        return True
+    ans = input(f"  {C.RED}Admin/Root kerak. Ruxsat berasizmi? [y/N] : {C.CYAN}").strip().lower()
+    print(C.RESET, end="")
+    if ans not in ("y","yes","ha","xa"):
+        twl("Admin ruxsatisiz davom etilmaydi.", color=C.YELLOW); time.sleep(0.8)
+        return False
+    if platform.system() == "Windows":
+        try:
+            import ctypes
+            params = " ".join(sys.argv)
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+            sys.exit(0)
+        except Exception:
+            twl("Adminga ko‘tarish muvaffaqiyatsiz. Iltimos, konsolni Run as administrator bilan oching.", color=C.RED)
+            return False
+    else:
+        try:
+            os.execvp("sudo", ["sudo", sys.executable] + sys.argv)
+        except Exception:
+            twl("sudo orqali ko‘tarib bo‘lmadi. Terminalni sudo bilan qayta ishga tushiring.", color=C.RED)
+            return False
+
+# ══════════════════════════════════════════════════════════════════
 #  TYPEWRITER
 # ══════════════════════════════════════════════════════════════════
 def tw(text, delay=0.016, color=C.WHITE, nl=True):
@@ -179,45 +208,18 @@ def save_os_choice(choice):
         pass
 
 # ══════════════════════════════════════════════════════════════════
-#  ASCII ART
+#  TITLE ONLY (art removed)
 # ══════════════════════════════════════════════════════════════════
-ART = [
-    '                    ::::::::::::::::::                    ',
-    '              ::::::::::::::::::::::::::::::              ',
-    '          ::::::::::::::::::::::::::::::::::::::          ',
-    '       ::::::::::::::::::::     :::::::::::::::::::       ',
-    '     :::::::::::::                      :::::::::::::     ',
-    '  ::::::::::::                              ::::::::::::  ',
-    ' ::::::::::       ::::::::::::::::::::::       :::::::::: ',
-    ' ::::::::      :::::::::::::::::::::::::::::      ::::::: ',
-    '   ::::     ::::::::::::::::::::::::::::::::::     ::::   ',
-    '          ::::::::::::::           :::::::::::::          ',
-    '        :::::::::::                    :::::::::::        ',
-    '        ::::::::       ::::::::::::       ::::::::        ',
-    '          ::::     ::::::::::::::::::::     ::::          ',
-    '                 ::::::::::::::::::::::::                 ',
-    '               ::::::::::::::::::::::::::::               ',
-    '               :::::::::          :::::::::               ',
-    '                 ::::     ::::::     :::::                ',
-    '                        ::::::::::                        ',
-    '                       :::::::::::::                      ',
-    '                      ::::::::::::::                      ',
-    '                      ::::::::::::::                      ',
-    '                       ::::::::::::                       ',
-    '                         ::::::::                         ',
-]
+ART = []
 
 TITLE = [
-    '═' * 62,
-    '  ███████╗██╗   ██╗███████╗    ████████╗ ██████╗  ██████╗ ██╗',
-    '  ██╔════╝╚██╗ ██╔╝██╔════╝    ╚══██╔══╝██╔═══██╗██╔═══██╗██║',
-    '  ███████╗ ╚████╔╝ ███████╗       ██║   ██║   ██║██║   ██║██║',
-    '  ╚════██║  ╚██╔╝  ╚════██║       ██║   ██║   ██║██║   ██║██║',
-    '  ███████║   ██║   ███████║       ██║   ╚██████╔╝╚██████╔╝███████╗',
-    '  ╚══════╝   ╚═╝   ╚══════╝       ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝',
-    '═' * 62,
-    '                    ⚡  Created by Axmatov  ⚡',
-    '═' * 62,
+    "      ███████╗██╗   ██╗███████╗      ████████╗ ██████╗  ██████╗ ██╗",
+    "      ██╔════╝╚██╗ ██╔╝██╔════╝      ╚══██╔══╝██╔═══██╗██╔═══██╗██║",
+    "      ███████╗ ╚████╔╝ ███████╗         ██║   ██║   ██║██║   ██║██║",
+    "      ╚════██║  ╚██╔╝  ╚════██║         ██║   ██║   ██║██║   ██║██║",
+    "      ███████║   ██║   ███████║         ██║   ╚██████╔╝╚██████╔╝███████╗",
+    "      ╚══════╝   ╚═╝   ╚══════╝         ╚═╝    ╚═════╝  ╚═════╝ ╚══════╝",
+    "                       ⚡ Created by Axmatov ⚡",
 ]
 
 def print_banner():
@@ -269,49 +271,49 @@ def select_os():
 # ══════════════════════════════════════════════════════════════════
 TOOLS = {
     # NETWORK — both
-    "1" : ("Ping",           "NET","🟢","Ping host — custom count & interval",   "easy",   "both"),
-    "2" : ("Port Scan",      "NET","🟡","Multi-threaded open TCP port scanner",  "medium", "both"),
-    "3" : ("Traceroute",     "NET","🟡","Trace network hops to destination",     "medium", "both"),
-    "4" : ("DNS Lookup",     "NET","🟢","Resolve domain name → IP addresses",    "easy",   "both"),
-    "5" : ("WHOIS",          "NET","🟢","Domain/IP registration information",    "easy",   "both"),
-    "6" : ("Net Interfaces", "NET","🟢","Show all network adapters & IPs",       "easy",   "both"),
-    "7" : ("Bandwidth",      "NET","🟡","Internet speed test (DL / UL)",         "medium", "both"),
-    "8" : ("ARP Scan",       "NET","🔴","Discover all devices on local LAN",     "hard",   "both"),
-    "9" : ("HTTP Check",     "NET","🟢","URL status, server, response time",     "easy",   "both"),
+    "1" : ("Ping",           "NET","🟢","Ping — paket soni/interval",            "easy",   "both"),
+    "2" : ("Port Scan",      "NET","🟡","Ko‘p oqimli TCP port skaneri",          "medium", "both"),
+    "3" : ("Traceroute",     "NET","🟡","Manzilgacha yo‘l (hoplar)",             "medium", "both"),
+    "4" : ("DNS Lookup",     "NET","🟢","Domen → IP yechimi",                    "easy",   "both"),
+    "5" : ("WHOIS",          "NET","🟢","Domen/IP ro‘yxat ma’lumoti",            "easy",   "both"),
+    "6" : ("Net Interfaces", "NET","🟢","Adapterlar va IP lar",                  "easy",   "both"),
+    "7" : ("Bandwidth",      "NET","🟡","Internet tezlik testi (DL/UL)",         "medium", "both"),
+    "8" : ("ARP Scan",       "NET","🔴","Lokal LAN qurilmalarini topish",        "hard",   "both"),
+    "9" : ("HTTP Check",     "NET","🟢","URL status, server, javob vaqti",       "easy",   "both"),
     # SYSTEM — both
-    "10": ("System Info",    "SYS","🟢","OS, CPU, hostname, local IP details",  "easy",   "both"),
-    "11": ("Process List",   "SYS","🟢","All running processes sorted by CPU",  "easy",   "both"),
-    "12": ("Disk Usage",     "SYS","🟢","Partitions, sizes, free space",        "easy",   "both"),
-    "13": ("RAM Usage",      "SYS","🟢","Memory — total / used / free",         "easy",   "both"),
-    "14": ("CPU Monitor",    "SYS","🟢","Live CPU usage bar — 8 samples",       "easy",   "both"),
-    "15": ("Kill Process",   "SYS","🔴","Terminate process by PID or name",     "hard",   "both"),
-    "16": ("Startup List",   "SYS","🟡","Programs that execute at boot",        "medium", "both"),
+    "10": ("System Info",    "SYS","🟢","OS, CPU, hostname, IP",                "easy",   "both"),
+    "11": ("Process List",   "SYS","🟢","CPU bo‘yicha saralangan processlar",   "easy",   "both"),
+    "12": ("Disk Usage",     "SYS","🟢","Bo‘limlar hajmi va bo‘sh joy",         "easy",   "both"),
+    "13": ("RAM Usage",      "SYS","🟢","Xotira: jami/ishlatil/bo‘sh",          "easy",   "both"),
+    "14": ("CPU Monitor",    "SYS","🟢","Jonli CPU panel (8 s)",                "easy",   "both"),
+    "15": ("Kill Process",   "SYS","🔴","PID yoki nom bo‘yicha o‘ldirish",      "hard",   "both"),
+    "16": ("Startup List",   "SYS","🟡","Yuklanishda ishlaydigan dasturlar",    "medium", "both"),
     # WINDOWS only
-    "17": ("Win Optimizer",  "WIN","🟡","Disable effects, SysMain, indexing",   "medium", "windows"),
-    "18": ("Clear Cache",    "WIN","🟡","Delete temp & cache files",            "medium", "windows"),
-    "19": ("Win Activate",   "WIN","🔴","KMS activate Windows 10/11 & Office",  "hard",   "windows"),
-    "20": ("Speed Up",       "WIN","🟡","Registry tweaks for faster Windows",   "medium", "windows"),
-    "21": ("Win Update",     "WIN","🟡","Check & install Windows updates",      "medium", "windows"),
-    "22": ("Firewall",       "WIN","🟡","Manage Windows Firewall rules",        "medium", "windows"),
+    "17": ("Win Optimizer",  "WIN","🟡","Effekt/SysMain/indeksni o‘chir",       "medium", "windows"),
+    "18": ("Clear Cache",    "WIN","🟡","Temp/kesh fayllarni tozalash",         "medium", "windows"),
+    "19": ("Win Activate",   "WIN","🔴","KMS aktivatsiya (Win/Office)",         "hard",   "windows"),
+    "20": ("Speed Up",       "WIN","🟡","Registry tezlashtirish sozlamalari",   "medium", "windows"),
+    "21": ("Win Update",     "WIN","🟡","Windows yangilanishlarini o‘rnatish",  "medium", "windows"),
+    "22": ("Firewall",       "WIN","🟡","Windows Firewall qoidalari",           "medium", "windows"),
     # LINUX only
-    "23": ("UFW Firewall",   "LNX","🟡","Manage UFW rules — allow/deny ports",  "medium", "linux"),
-    "24": ("Pkg Manager",    "LNX","🟢","APT/YUM install, update, remove",      "easy",   "linux"),
-    "25": ("Services",       "LNX","🟡","Systemd start/stop/enable/disable",    "medium", "linux"),
-    "26": ("Cron Jobs",      "LNX","🟡","View, add, edit scheduled cron tasks", "medium", "linux"),
-    "27": ("Log Viewer",     "LNX","🟢","syslog, auth.log, dmesg, journalctl",  "easy",   "linux"),
+    "23": ("UFW Firewall",   "LNX","🟡","Portlarga ruxsat/taqiqlash (ufw)",     "medium", "linux"),
+    "24": ("Pkg Manager",    "LNX","🟢","APT/YUM o‘rnatish/yangilash/o‘chirish", "easy",  "linux"),
+    "25": ("Services",       "LNX","🟡","systemd start/stop/enable/disable",    "medium", "linux"),
+    "26": ("Cron Jobs",      "LNX","🟡","Cron vazifalarini ko‘rish/qo‘shish",    "medium", "linux"),
+    "27": ("Log Viewer",     "LNX","🟢","syslog, auth, dmesg, journalctl",      "easy",   "linux"),
     # SECURITY — both
-    "28": ("Hash File",      "SEC","🟢","MD5 / SHA1 / SHA256 file checksum",    "easy",   "both"),
-    "29": ("Pass Gen",       "SEC","🟢","Generate cryptographically safe pwds", "easy",   "both"),
-    "30": ("Vuln Scan",      "SEC","🔴","nmap-based CVE vulnerability scan",    "hard",   "both"),
+    "28": ("Hash File",      "SEC","🟢","MD5/SHA1/SHA256 fayl xeshi",           "easy",   "both"),
+    "29": ("Pass Gen",       "SEC","🟢","Kuchli parollar generatori",           "easy",   "both"),
+    "30": ("Vuln Scan",      "SEC","🔴","nmap CVE zaiflik skaneri",             "hard",   "both"),
     # NMAP & AIRCRACK — both
-    "31": ("Nmap Quick",     "NET","🟡","Fast top-port scan (nmap -T4 -F)",     "medium", "both"),
-    "32": ("Nmap Full",      "NET","🔴","Full scan -sC -sV -O -p-",             "hard",   "both"),
-    "33": ("Nmap Ping",      "NET","🟡","Ping sweep subnet (-sn)",              "medium", "both"),
-    "34": ("Nmap Top20",     "NET","🟡","Top 20 ports with service detect",     "medium", "both"),
-    "35": ("Airmon",         "SEC","🔴","Start/stop monitor mode",              "hard",   "both"),
-    "36": ("Airodump",       "SEC","🔴","Capture WPA handshakes",               "hard",   "both"),
-    "37": ("Aircrack",       "SEC","🔴","Crack capture with wordlist",          "hard",   "both"),
-    "38": ("Aireplay",       "SEC","🔴","Deauth to force handshake",            "hard",   "both"),
+    "31": ("Nmap Quick",     "NET","🟡","Tez top-port (-T4 -F)",                "medium", "both"),
+    "32": ("Nmap Full",      "NET","🔴","To‘liq -sC -sV -O -p-",                "hard",   "both"),
+    "33": ("Nmap Ping",      "NET","🟡","Subnetni ping-sweep (-sn)",            "medium", "both"),
+    "34": ("Nmap Top20",     "NET","🟡","Top 20 port + servis aniqlash",        "medium", "both"),
+    "35": ("Airmon",         "SEC","🔴","Monitor rejimi boshlash/to‘xtatish",   "hard",   "both"),
+    "36": ("Airodump",       "SEC","🔴","WPA handshake yozish",                 "hard",   "both"),
+    "37": ("Aircrack",       "SEC","🔴","Cap faylni wordlist bilan ochish",     "hard",   "both"),
+    "38": ("Aireplay",       "SEC","🔴","Deauth jo‘natib handshake olish",      "hard",   "both"),
     "0" : ("Exit",           "---","⬜","Exit toolkit",                         "easy",   "both"),
 }
 
@@ -1090,6 +1092,7 @@ FMAP = {
     "35": t_airmon,     "36": t_airodump,   "37": t_aircrack,
     "38": t_aireplay,
 }
+HARD_TOOLS = {tid for tid, d in TOOLS.items() if d[4] == "hard"}
 
 # ══════════════════════════════════════════════════════════════════
 #  MAIN
@@ -1137,6 +1140,9 @@ def main():
             vt        = visible_tools(cur_os)
             first_run = True
         elif choice in vt and choice in FMAP:
+            if choice in HARD_TOOLS and not is_admin():
+                if not ensure_admin():
+                    continue
             clr(); FMAP[choice]()
         elif choice in FMAP:
             twl(f"⚠  Tool #{choice} is not available for "

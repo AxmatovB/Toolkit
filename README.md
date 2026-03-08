@@ -88,7 +88,11 @@
 ### 2) Klonlash
 ```bash
 git clone https://github.com/AxmatovB/Toolkit.git
+<<<<<<< HEAD
 cd Toolkit   # odatda: ~/Toolkit yoki %USERPROFILE%\\Toolkit
+=======
+cd Toolkit   # odatda: ~/Toolkit yoki %USERPROFILE%\Toolkit
+>>>>>>> 6582098 ()
 chmod +x toolkit   # Linux/macOS
 ```
 
