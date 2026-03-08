@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Launcher for SYS-TOOLKIT (Linux/macOS)
+DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+PY="$(command -v python3 || command -v python)"
+if [ -z "$PY" ]; then
+  echo "Python is required to run toolkit.py"
+  exit 1
+fi
+exec "$PY" "$DIR/toolkit.py" "$@"
